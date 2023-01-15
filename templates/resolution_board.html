@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <form class="ui form" action="/resolutions" method="POST">
+        <div class="name">
+            <label>Resolution</label>
+            <input type="text" name="name" placeholder="Enter Resolution..."><br>
+        </div>
+        <label for="time-frame">Time Frame</label>
+        <select name="time-frame" id="time-frame">
+            <option value="week">Week</option>
+            <option value="month">Month</option>
+        </select>
+        <label for="progress-visual">Progress Visual</label>
+        <select name="progress-visual" id="progress-visual">
+            <option value="calendar">Calendar</option>
+            <option value="thermometer">Thermometer</option>
+        </select>
+        <button class="ui blue button" type="submit">Add</button>
+    </form>
+    <a href='/logout'><button>Logout</button></a>
+
+    <hr>
+
+    {% if cur_weekly != None %}
+    Your Current Weekly Resolution is: {{cur_weekly.resolution}}! <br>    
+    {% endif %}
+    <form action="{{ url_for('new') }}" method="POST">
+        <button type="submit" name="week">New Weekly</button>
+    </form>
+
+    {% if cur_monthly != None %}
+    Your Current Monthly Resolution is: {{cur_monthly.resolution}}! <br>    
+    {% endif %}
+    <form action="{{ url_for('new') }}" method="POST">
+        <button type="submit" name="month">New Monthly</button>
+    </form>
+
+    <hr>
+    <p>WEEKLY RESOLUTIONS</p>
+    <ol>
+        {% for resol in resols %}
+            {% if resol.time_frame == "week" %}
+                <li>
+                    <a href="{{ url_for('edit', to_edit=resol.resolution) }}">{{resol.resolution}}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ol>
+
+    <p>MONTHLY RESOLUTIONS</p>
+    <ol>
+        {% for resol in resols %}
+            {% if resol.time_frame == "month" %}
+            <li>
+                <a href="{{ url_for('edit', to_edit=resol.resolution) }}">{{resol.resolution}}</a>
+            </li>
+            {% endif %}
+        {% endfor %}
+    </ol>
+</body>
+</html>

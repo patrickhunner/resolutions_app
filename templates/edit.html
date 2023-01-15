@@ -1,0 +1,28 @@
+<html>
+    <head>
+    <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <form action="{{ url_for ('edit', to_edit=resol.resolution) }}" method="POST">
+            Resolution 
+            <input type="text" name="name" value={{resol.resolution}}><br>
+            Time Frame
+            <select name="time-frame" id="time-frame">
+                <option value="week">Week</option>
+                <option value="month">Month</option>
+            </select>
+            Progress Visual
+            <select name="progress-visual" id="progress-visual">
+                <option value="thermometer">Thermometer</option>
+                <option value="calendar">Calendar</option>
+            </select>
+            <button name="update" type="submit">Update</button>
+        </form>
+        <form action="{{ url_for('edit', to_edit=resol.resolution) }}" method="POST">
+            <button type="submit" name="set_active">Set As Current</button>
+        </form>
+        <a href="{{ url_for('delete', resol=resol.resolution ) }}"><button>Delete Resolution</button></a>
+        <a href='/logout'><button>Logout</button></a>
+        <hr>
+    </body>
+</html>
