@@ -29,7 +29,6 @@ db = SQLAlchemy(app)
 
 url = "mysql+pymysql://root@localhost/resolution"
 engine = create_engine(url, echo=True)
-# connection = engine.connect()
 
 Session = sessionmaker(bind = engine)
 thisSession = Session()
@@ -84,6 +83,7 @@ def callback():
         request=token_request,
         audience=GOOGLE_CLIENT_ID
     )
+
     session["google_id"] = id_info.get("sub") 
     session["name"] = id_info.get("name")
     session["email"] = id_info.get("email")
@@ -94,7 +94,6 @@ def callback():
         db.session.commit()
     return redirect("/resolutions")  # the final page where the authorized users will end up
 
-
 @app.route("/logout")  #the logout page and function
 def logout():
     session.clear()
@@ -104,8 +103,12 @@ def logout():
 def index():
     return render_template("login.html")
 
-@app.route("/resolutions", methods=["GET","POST"])  #the page where only the authorized users can go to
+@app.route("/home")
 @login_is_required
+def home():
+    return render_template("navigation.html")
+
+@app.route("/resolutions", methods=["GET","POST"])  #the page where only the authorized users can go to
 def resolutions():
     if flask.request.method == "POST":
         resol = request.form
@@ -123,12 +126,22 @@ def resolutions():
             resols = []
         return render_template("resolution_board.html", resols=resols, cur_weekly=cur_weekly, cur_monthly=cur_monthly)
 
+@app.route("/achievements")
+def achievements():
+    return render_template("achievements.html")
+
+@app.route("/current")
+def current():
+    return render_template("current.html")
+
 @app.route("/edit/<to_edit>", methods=["GET","POST","DELETE"])
 def edit(to_edit):
     resol = Resolutions.query.filter_by(email=session["email"], resolution=to_edit).first()
     if flask.request.method == "POST":
         updated_resol = request.form
         if "set_active" in updated_resol:
+            prev_active = Resolutions.query.filter_by(email=session["email"], active=1).first()
+            prev_active.active = 0
             resol.active = 1
             db.session.commit()
         else:
@@ -152,10 +165,14 @@ def delete():
 def new():
     if "week" in request.form:
         all_ids = Resolutions.query.filter_by(email=session["email"], time_frame="week").all()
+        if len(all_ids) == 0:
+            return redirect("/resolutions")
         rand = randrange(len(all_ids) - 1)
         all_ids[rand].active = 1
     else:
         all_ids = Resolutions.query.filter_by(email=session["email"], time_frame="month").all()
+        if len(all_ids) == 0:
+            return redirect("/resolutions")
         rand = randrange(len(all_ids) - 1)
         all_ids[rand].active = 1
     db.session.commit()

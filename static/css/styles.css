@@ -1,0 +1,9 @@
+.nav-container {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+}
+
+.resol-container {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+}
